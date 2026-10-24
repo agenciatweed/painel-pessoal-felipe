@@ -69,4 +69,6 @@ O fundo usa a cena Unicorn Studio fornecida pelo usuário (`p7Ff6pfTrb5Gs59C7nLC
 
 Sincronização automática criada no Codex: **Sincronizar painel pessoal**, a cada 30 minutos. Requer o Codex aberto neste computador e acesso às pastas locais. Executa somente `python scripts/sync_data.py --upload`; não modifica os coletores nem publica código. Notificações somente em falhas.
 
+O fundo tem uma camada de azul Tweed a 38% para reduzir sua luminosidade. O acompanhamento nativo do mouse está habilitado; os movimentos são recebidos pelo SDK na janela, mantendo `pointer-events: none` no fundo para preservar os cliques nos controles.
+
 Assets oficiais fixados no commit `45ae3fdb063a1a0a6d63d7f367d51add32a87039` das [brand guidelines Tweed](https://github.com/agenciatweed/brand-guidelines-tweed). Origens em `public/assets/ORIGINS.json`.

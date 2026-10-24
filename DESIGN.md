@@ -119,7 +119,7 @@ Sem largura máxima: a página ocupa a largura disponível, inclusive em ultrawi
 
 Os três blocos usam `rgb(18 20 30 / 84%)`, bordas de 1px e blur de 6px quando suportado. A transparência está no preenchimento, nunca no texto. O diálogo mantém fundo sólido e sombra `0 18px 40px #0006` para preservar a leitura do mapa e das medidas.
 
-A cena `p7Ff6pfTrb5Gs59C7nLC` usa SDK Unicorn Studio fixado em v1.4.29, resolução limitada e 24fps. Um filtro SVG de luminância mapeia sombras para `#151a29` e luzes para `#08ffb1`, sem alterar o projeto remoto. O fundo é fixed e não captura cliques. Com redução de movimento ou falha de carregamento, permanece um fundo estático na paleta.
+A cena `p7Ff6pfTrb5Gs59C7nLC` usa SDK Unicorn Studio fixado em v1.4.29, resolução limitada e 24fps. Um filtro SVG de luminância mapeia sombras para `#151a29` e luzes para `#08ffb1`, sem alterar o projeto remoto; uma camada de azul Tweed a 38% escurece o resultado. O fundo é fixed e não captura cliques. O acompanhamento nativo do mouse permanece habilitado: o SDK recebe movimentos pela janela, inclusive sobre as colunas. Com redução de movimento ou falha de carregamento, permanece um fundo estático na paleta.
 
 ## Shapes
 

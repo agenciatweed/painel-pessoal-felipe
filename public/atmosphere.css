@@ -13,6 +13,13 @@ body { isolation: isolate; }
   overflow: hidden;
   background: #151a29;
 }
+.page-background::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgb(11 12 19 / 38%);
+  pointer-events: none;
+}
 #unicorn-background { width: 100%; height: 100%; filter: url('#tweed-tone'); }
 #unicorn-background canvas { display: block; }
 .topbar { background: rgb(11 12 19 / 74%); border-color: var(--panel-stroke); }
