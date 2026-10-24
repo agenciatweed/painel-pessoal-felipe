@@ -1,3 +1,10 @@
+---
+version: 1
+slug: "public-index-html"
+primary_target: "public/index.html"
+related_targets: ["public/styles.css","public/app.js","public/cockpit.css","public/cockpit.js"]
+---
+
 # Painel /
 
 Mode: Operate. Brand pinned by the user's Tweed reference; four-column composition explicitly requested, no concept selection needed. Seed dfdd091c ran degraded; brief-pinned composition takes precedence.

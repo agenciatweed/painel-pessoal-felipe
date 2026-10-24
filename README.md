@@ -45,7 +45,7 @@ Variáveis Vercel:
 
 Repositório: https://github.com/agenciatweed/painel-pessoal-felipe
 
-Projeto Vercel: `painel-pessoal-felipe`; produção em https://painel-pessoal-felipe.vercel.app.
+Projeto Vercel: `painel-pessoal-felipe`; produção em https://painel-pessoal-felipe.vercel.app. A versão foi publicada a partir da branch `main` pelo conector Vercel. O vínculo permanente GitHub → Vercel ainda não foi configurado: a revisão automática bloqueou dispensar o convite de 2FA durante a conexão pelo navegador. Até concluir essa conexão na conta, novos pushes precisam de uma publicação explícita pelo conector. Isso não afeta a sincronização dos dados.
 
 Não publicar a pasta antiga `tweedtraining`: ela contém credenciais legadas. `.gitignore` exclui `.local`, `.env`, dados, dependências e capturas. Commits de código não são necessários para atualizar dados.
 
@@ -61,6 +61,10 @@ Testes sintéticos cobrem arredondamento de pace, ciclo de tarefas, repetição 
 
 ## Design e Impeccable
 
-`PRODUCT.md` registra as decisões confirmadas pelo usuário; `DESIGN.md` documenta a interface construída. `.impeccable/config.json` guarda a escolha por desenvolvimento direto em código. A direção e o contrato da superfície estão em `.impeccable/surface.md`.
+`PRODUCT.md` registra as decisões confirmadas pelo usuário; `DESIGN.md` e `.impeccable/design.json` documentam a interface construída. `.impeccable/config.json` guarda a escolha por desenvolvimento direto em código. A direção e o contrato registrados pelo Impeccable estão em `.impeccable/surfaces/public-index-html.md`.
+
+O Overdrive segue a direção **Cockpit Tweed** escolhida pelo usuário: quatro áreas com rolagem própria no desktop, atalhos no celular, gráficos com interpolação de geometria e expansão dos detalhes via View Transitions. Redução de movimento e navegadores sem suporte preservam a abertura estática do diálogo. Não há dependência de biblioteca de animação.
+
+Sincronização automática criada no Codex: **Sincronizar painel pessoal**, a cada 30 minutos. Requer o Codex aberto neste computador e acesso às pastas locais. Executa somente `python scripts/sync_data.py --upload`; não modifica os coletores nem publica código. Notificações somente em falhas.
 
 Assets oficiais fixados no commit `45ae3fdb063a1a0a6d63d7f367d51add32a87039` das [brand guidelines Tweed](https://github.com/agenciatweed/brand-guidelines-tweed). Origens em `public/assets/ORIGINS.json`.
