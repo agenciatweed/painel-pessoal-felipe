@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="pt-BR">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0b0c13"><title>Painel · Felipe | Tweed</title><link rel="icon" href="/assets/tweed.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css"><script type="module" src="/app.js"></script></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#0b0c13"><title>Painel · Felipe | Tweed</title><link rel="icon" href="/assets/tweed.svg" type="image/svg+xml"><link rel="stylesheet" href="/styles.css"><link rel="stylesheet" href="/cockpit.css"><script type="module" src="/app.js"></script></head>
 <body>
-<header class="topbar"><a class="brand" href="/" aria-label="Painel Tweed, início"><img src="/assets/tweed.svg" width="110" height="34" alt="tweed"></a><span class="header-divider"></span><h1>Painel <span>Felipe</span></h1><div class="top-actions"><span id="today"></span><button id="refresh" class="button secondary">Atualizar</button></div></header>
+<header class="topbar"><a class="brand" href="/" aria-label="Painel Tweed, início"><img src="/assets/tweed.svg" width="110" height="34" alt="tweed"></a><span class="header-divider"></span><p class="panel-name">Painel <span>Felipe</span></p><div class="top-actions"><span id="today"></span><button id="refresh" class="button secondary"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M19 12a7 7 0 0 0-12-5L4 10m16 4-3 3A7 7 0 0 1 5 12"/></svg><span>Atualizar</span></button></div></header>
 <main>
-<div class="overview"><p>Seu dia, no seu ritmo.</p><span id="sync-status" role="status">Carregando seus dados…</span></div>
+<div class="overview"><div><h1>Seu dia, no seu ritmo.</h1><p class="overview-description">Trabalho, movimento e música. Tudo por aqui.</p></div><span id="sync-status" role="status">Carregando seus dados…</span></div>
+<nav class="section-nav" aria-label="Áreas do painel"><a href="#tasks-title">Tarefas</a><a href="#runs-title">Corridas</a><a href="#evolution-title">Evolução</a><a href="#music-title">Em rotação</a></nav>
 <div id="global-error" class="notice" role="alert" hidden></div>
 <div class="dashboard">
 <section class="column tasks-column" aria-labelledby="tasks-title"><div class="section-heading"><h2 id="tasks-title">Tarefas</h2><span class="count" id="task-count">—</span></div><p class="section-description">Uma coisa de cada vez.</p>

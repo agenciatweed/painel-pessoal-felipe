@@ -1,3 +1,4 @@
+import {expandRun,collapseRun,chartSnapshot,animateCharts} from './cockpit.js';
 const $=s=>document.querySelector(s);
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=(n,d=1)=>typeof n==='number'&&Number.isFinite(n)?n.toLocaleString('pt-BR',{maximumFractionDigits:d,minimumFractionDigits:d}):'—';
@@ -12,7 +13,7 @@ const trash='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M9 7V4h
 const arrow='<svg class="arrow-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M6 6h12v12"/></svg>';
 function renderTasks(){
  const open=tasks.filter(t=>!t.completedAt),done=tasks.filter(t=>t.completedAt).sort((a,b)=>b.completedAt-a.completedAt);
- const row=t=>`<li class="task-row ${t.completedAt?'done':''}"><label><input type="checkbox" data-complete="${escape(t.id)}" ${t.completedAt?'checked':''} ${saving?'disabled':''}><span>${escape(t.text)}</span></label><button class="icon-button delete-task" data-delete="${escape(t.id)}" aria-label="Excluir ${escape(t.text)}" ${saving?'disabled':''}>${trash}</button></li>`;
+ const row=t=>`<li class="task-row ${t.completedAt?'done':''} ${t.pending?'pending':''}"><label><input type="checkbox" data-complete="${escape(t.id)}" ${t.completedAt?'checked':''} ${saving?'disabled':''}><span>${escape(t.text)}</span></label><button class="icon-button delete-task" data-delete="${escape(t.id)}" aria-label="Excluir ${escape(t.text)}" ${saving?'disabled':''}>${trash}</button></li>`;
  $('#tasks').innerHTML=open.map(row).join('')||'<li class="empty">Tudo em dia. Espaço para o que vem a seguir.</li>';
  $('#completed-tasks').innerHTML=done.map(row).join('')||'<li class="empty">As tarefas concluídas aparecem aqui.</li>';
  $('#task-count').textContent=open.length;$('#completed-count').textContent=done.length;
@@ -20,9 +21,13 @@ function renderTasks(){
  document.querySelectorAll('[data-delete]').forEach(el=>el.addEventListener('click',()=>saveTask({action:'delete',id:el.dataset.delete})));
 }
 async function saveTask(command){
- if(saving)return; saving=true;renderTasks();$('#task-form button').disabled=true;$('#task-status').textContent='Salvando…';
+ if(saving)return; saving=true;const previous=structuredClone(tasks);
+ if(command.action==='create')tasks.push({id:command.id,text:command.text,createdAt:Date.now(),completedAt:null,pending:true});
+ else if(command.action==='delete')tasks=tasks.filter(t=>t.id!==command.id);
+ else tasks=tasks.map(t=>t.id===command.id?{...t,completedAt:command.completed?Date.now():null,pending:true}:t);
+ renderTasks();$('#task-form button').disabled=true;$('#task-status').textContent='Salvando…';
  try{tasks=(await api('tasks',command)).tasks;if(command.action==='create')$('#task-input').value='';$('#task-status').textContent='Salvo online.';}
- catch(e){$('#task-status').textContent=e.message;}
+ catch(e){tasks=previous;$('#task-status').textContent=e.message+' Tente novamente.';}
  finally{saving=false;renderTasks();$('#task-form button').disabled=false;}
 }
 function renderRuns(){
@@ -48,6 +53,7 @@ function chartMonths(){
  const count=Number($('#months').value);return count?values.slice(-count):values;
 }
 function renderCharts(){
+ const previous=chartSnapshot($('#charts'));
  const values=chartMonths();
  if(!values.length){$('#charts').innerHTML='<p class="empty">A evolução aparecerá após a primeira coleta Garmin.</p>';return;}
  $('#chart-coverage').textContent=`${month(values[0].month)} a ${month(values.at(-1).month)} · pontos atenuados indicam mês incompleto. Lacunas indicam ausência de coleta.`;
@@ -64,13 +70,14 @@ function renderCharts(){
    if(v.missing||!Number.isFinite(v[key])){path='';return;}
    const tip=`${month(v.month)} · ${fmt(v[key])}${id==='volume'?` · média ${num(v.avgKm)} km/treino`:''}${v.complete?'':' · coleta parcial'}`;
    if(id==='volume'){
-    shapes+=`<rect class="bar ${v.complete?'':'partial'}" x="${x(i)-step*.26}" y="${y(v[key])}" width="${step*.52}" height="${top+ph-y(v[key])}" rx="2" tabindex="0" role="img" aria-label="${escape(tip)}" data-tip="${escape(tip)}"><title>${escape(tip)}</title></rect>`;
+    shapes+=`<rect data-motion-key="${id}-${v.month}" data-point="${v.month}" class="bar ${v.complete?'':'partial'}" x="${x(i)-step*.26}" y="${y(v[key])}" width="${step*.52}" height="${top+ph-y(v[key])}" rx="2"><title>${escape(tip)}</title></rect>`;
    }else{
-    if(path)shapes+=`<path class="trend" d="M${path} L${x(i)},${y(v[key])}"/>`;
+    if(path)shapes+=`<path data-motion-key="${id}-line-${v.month}" class="trend" d="M${path} L${x(i)},${y(v[key])}"/>`;
     path=`${x(i)},${y(v[key])}`;
-    shapes+=`<circle class="dot ${v.complete?'':'partial'}" cx="${x(i)}" cy="${y(v[key])}" r="3.5" tabindex="0" role="img" aria-label="${escape(tip)}" data-tip="${escape(tip)}"><title>${escape(tip)}</title></circle>`;
+    shapes+=`<circle data-motion-key="${id}-${v.month}" data-point="${v.month}" class="dot ${v.complete?'':'partial'}" cx="${x(i)}" cy="${y(v[key])}" r="3.5"><title>${escape(tip)}</title></circle>`;
    }
   });
+  const hits=values.map((v,i)=>v.missing||!Number.isFinite(v[key])?'':`<rect class="chart-hit" x="${left+i*step}" y="${top}" width="${step}" height="${ph}" tabindex="0" role="img" data-month="${v.month}" aria-label="${escape(month(v.month)+' · '+fmt(v[key])+(id==='volume'?' · média '+num(v.avgKm)+' km/treino':'')+(v.complete?'':' · coleta parcial'))}" data-tip="${escape(month(v.month)+' · '+fmt(v[key])+(id==='volume'?' · média '+num(v.avgKm)+' km/treino':'')+(v.complete?'':' · coleta parcial'))}"></rect>`).join('');
   // Average distance shares the km axis, so both series keep their real units.
   if(id==='volume'){
    let prev;
@@ -80,9 +87,11 @@ function renderCharts(){
   const labelIndices=new Set([0,Math.round((values.length-1)/3),Math.round(2*(values.length-1)/3),values.length-1]);
   const labels=values.map((v,i)=>labelIndices.has(i)?`<text x="${x(i)}" y="${height-6}" text-anchor="middle">${escape(month(v.month))}</text>`:'').join('');
   const table=values.map(v=>`<tr><th scope="row">${escape(month(v.month))}${v.missing?'':v.complete?'':' *'}</th><td>${v.missing?'Sem coleta':fmt(v[key])}</td>${id==='volume'?`<td>${v.missing?'—':num(v.avgKm)+' km'}</td>`:''}</tr>`).join('');
-  return `<section class="chart-block"><div class="chart-title"><h3>${title}</h3><span>${unit}</span></div><svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="group" aria-label="${title} por mês">${grid}${shapes}${labels}</svg>${id==='volume'?'<div class="legend"><span><i></i>Total mensal</span><span><i class="line"></i>Média por treino</span></div>':''}<p class="chart-tooltip" id="tip-${id}" aria-live="polite">Passe o mouse ou foque um ponto.</p><details class="chart-table"><summary>Ver valores mensais</summary><table><thead><tr><th>Mês</th><th>${title}</th>${id==='volume'?'<th>Média/treino</th>':''}</tr></thead><tbody>${table}</tbody></table></details></section>`;
+  const latest=actual.at(-1);
+  return `<section class="chart-block"><div class="chart-title"><h3>${title}</h3><span>${unit}</span></div><svg class="chart-svg" viewBox="0 0 ${width} ${height}" role="group" aria-label="${title} por mês">${grid}${shapes}${labels}${hits}</svg>${id==='volume'?'<div class="legend"><span><i></i>Total mensal</span><span><i class="line"></i>Média por treino</span></div>':''}<p class="chart-tooltip" id="tip-${id}" aria-live="polite">${escape(month(latest.month)+' · '+fmt(latest[key])+(latest.complete?'':' · coleta parcial'))}</p><details class="chart-table"><summary>Ver valores mensais</summary><table><thead><tr><th>Mês</th><th>${title}</th>${id==='volume'?'<th>Média/treino</th>':''}</tr></thead><tbody>${table}</tbody></table></details></section>`;
  }).join('');
- document.querySelectorAll('[data-tip]').forEach(el=>{const show=()=>el.closest('.chart-block').querySelector('.chart-tooltip').textContent=el.dataset.tip;el.addEventListener('pointerenter',show);el.addEventListener('focus',show);el.addEventListener('click',show);});
+ document.querySelectorAll('[data-tip]').forEach(el=>{const show=()=>{const block=el.closest('.chart-block');block.querySelector('.chart-tooltip').textContent=el.dataset.tip;block.querySelectorAll('.data-active').forEach(p=>p.classList.remove('data-active'));block.querySelector(`[data-point="${el.dataset.month}"]`)?.classList.add('data-active');};el.addEventListener('pointerenter',show);el.addEventListener('focus',show);el.addEventListener('click',show);});
+ animateCharts($('#charts'),previous);
 }
 async function loadMaps(){
  if(window.google?.maps?.Map)return window.google.maps;
@@ -102,7 +111,7 @@ async function openRun(id){
  $('#detail-title').textContent=r.name;$('#detail-date').textContent=`${date(r.date)} · ${r.date.slice(11,16)}`;
  $('#detail-metrics').innerHTML=[['Distância',num(r.km,2)+' km'],['Duração',duration(r.duration)],['Pace médio',pace(r.pace)+'/km'],['FC média',num(r.hr,0)+' bpm'],['FC máxima',num(r.maxHr,0)+' bpm'],['Cadência',num(r.cadence,0)+' ppm'],['Elevação',num(r.elevation,0)+' m'],['Energia',num(r.calories,0)+' kcal']].map(([label,value])=>`<div><dt>${label}</dt><dd>${escape(value)}</dd></div>`).join('');
  if(activePolyline)activePolyline.setMap(null);activeMap=null;$('#map').replaceChildren();$('#map').hidden=false;
- if(!$('#run-dialog').open)$('#run-dialog').showModal();
+ if(!$('#run-dialog').open)await expandRun(id);
  if(!r.route?.length){$('#map-status').textContent='O arquivo coletado desta corrida ainda não contém um trajeto GPS.';$('#map').hidden=true;return;}
  $('#map-status').textContent='Carregando o mapa do percurso…';
  try{
@@ -129,7 +138,7 @@ async function refresh(){
 $('#today').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',timeZone:'America/Sao_Paulo'});
 $('#task-form').addEventListener('submit',e=>{e.preventDefault();const text=$('#task-input').value.trim();if(text)saveTask({action:'create',id:crypto.randomUUID(),text});});
 $('#refresh').addEventListener('click',refresh);$('#months').addEventListener('change',()=>data&&renderCharts());$('#more-runs').addEventListener('click',()=>{shown+=10;renderRuns();});
-$('#close-dialog').addEventListener('click',()=>$('#run-dialog').close());$('#run-dialog').addEventListener('close',()=>{selectedRun=null;});
+$('#close-dialog').addEventListener('click',collapseRun);$('#run-dialog').addEventListener('cancel',e=>{e.preventDefault();collapseRun();});$('#run-dialog').addEventListener('close',()=>{selectedRun=null;});
 setInterval(async()=>{if(!saving&&!document.hidden){try{const result=await api('tasks');if(!saving){tasks=result.tasks;renderTasks();}}catch{$('#task-status').textContent='Sem conexão. Suas últimas tarefas continuam visíveis.';}}},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!saving)refresh();});
 refresh();
