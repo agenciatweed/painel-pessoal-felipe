@@ -1,3 +1,3 @@
 import {access} from 'node:fs/promises';
-for(const f of ['index.html','app.js','styles.css','cockpit.css','cockpit.js','assets/tweed.svg']) await access(new URL('../public/'+f,import.meta.url));
+for(const f of ['index.html','app.js','styles.css','cockpit.css','cockpit.js','atmosphere.css','atmosphere.js','assets/tweed.svg']) await access(new URL('../public/'+f,import.meta.url));
 console.log('Interface e assets verificados. Dados pessoais são carregados pela API, fora do build.');

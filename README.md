@@ -63,7 +63,9 @@ Testes sintéticos cobrem arredondamento de pace, ciclo de tarefas, repetição 
 
 `PRODUCT.md` registra as decisões confirmadas pelo usuário; `DESIGN.md` e `.impeccable/design.json` documentam a interface construída. `.impeccable/config.json` guarda a escolha por desenvolvimento direto em código. A direção e o contrato registrados pelo Impeccable estão em `.impeccable/surfaces/public-index-html.md`.
 
-O Overdrive segue a direção **Cockpit Tweed** escolhida pelo usuário: quatro áreas com rolagem própria no desktop, atalhos no celular, gráficos com interpolação de geometria e expansão dos detalhes via View Transitions. Redução de movimento e navegadores sem suporte preservam a abertura estática do diálogo. Não há dependência de biblioteca de animação.
+O Overdrive segue a direção **Cockpit Tweed** escolhida pelo usuário: quatro áreas com rolagem própria no desktop, atalhos no celular, gráficos com interpolação de geometria e expansão dos detalhes via View Transitions. Redução de movimento e navegadores sem suporte preservam a abertura estática do diálogo. As transições de interface usam APIs nativas do navegador.
+
+O fundo usa a cena Unicorn Studio fornecida pelo usuário (`p7Ff6pfTrb5Gs59C7nLC`), com o SDK v1.4.29 carregado uma única vez do CDN indicado. `atmosphere.css` aplica uma tonalização SVG entre azul-escuro e teal e agrupa as áreas em três blocos translúcidos com 22px de espaço. A largura não tem limite máximo. O efeito fica atrás de toda a página, não captura cliques, usa 24fps e não carrega WebGL quando há preferência por redução de movimento. Se o CDN ou a cena estiverem indisponíveis, o painel continua funcional sobre fundo estático. Data e relógio usam America/Sao_Paulo; o relógio atualiza a cada segundo.
 
 Sincronização automática criada no Codex: **Sincronizar painel pessoal**, a cada 30 minutos. Requer o Codex aberto neste computador e acesso às pastas locais. Executa somente `python scripts/sync_data.py --upload`; não modifica os coletores nem publica código. Notificações somente em falhas.
 

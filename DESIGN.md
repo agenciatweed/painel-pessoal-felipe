@@ -10,6 +10,8 @@ colors:
   ink: "#f6f7fa"
   muted: "#a6adbd"
   danger: "#ffb1b1"
+  atmosphere-dark: "#151a29"
+  panel-fill: "rgb(18 20 30 / 84%)"
 typography:
   headline:
     fontFamily: "Inter, Arial, sans-serif"
@@ -39,7 +41,7 @@ typography:
     letterSpacing: "-0.035em"
 rounded:
   control: "8px"
-  panel: "10px"
+  panel: "12px"
   dialog: "12px"
 spacing:
   compact: "8px"
@@ -59,7 +61,7 @@ components:
     rounded: "{rounded.control}"
     padding: "10px 14px"
   panel:
-    backgroundColor: "{colors.surface}"
+    backgroundColor: "{colors.panel-fill}"
     textColor: "{colors.ink}"
     rounded: "{rounded.panel}"
 ---
@@ -72,7 +74,7 @@ components:
 
 Direção escolhida pelo usuário no Impeccable Overdrive. Uma superfície de operação diária com quatro áreas simultâneas no desktop, listas compactas e tipografia hierárquica. O ritmo vem do conteúdo real: tarefas, medidas de corrida, gráficos mensais e rankings musicais.
 
-O teal oficial indica ação e destaque. A interface usa superfícies azul-escuras planas, divisórias discretas e Inter oficial hospedada no projeto. A expansão da corrida para o diálogo é o principal momento de movimento; as demais respostas são curtas e funcionais.
+O teal oficial indica ação e destaque. Por solicitação do usuário, uma cena Unicorn Studio cobre o viewport e aparece através de três blocos translúcidos: Tarefas, Corridas + Evolução e Em rotação. As superfícies mantêm o texto integralmente opaco. Inter oficial é hospedada no projeto; a expansão da corrida conecta a ação aos detalhes.
 
 **Key Characteristics:**
 - Quatro áreas no desktop, leitura vertical e atalhos no celular.
@@ -105,21 +107,23 @@ Medidas de corrida usam 20px no desktop e 22px no celular; detalhes usam 24px e 
 
 ## Layout
 
-Acima de 1279px, a grade tem quatro colunas com proporções `.86 / 1.05 / 1.25 / 1.65`, mínimos de `205 / 235 / 290 / 400px`. A música contém duas listas de igual largura. A grade ocupa `calc(100dvh - 252px)`, com mínimo de 480px; cada área tem rolagem própria e título sticky. O fundo do título é opaco para manter contraste durante a rolagem.
+Acima de 1279px, quatro áreas se agrupam em três blocos com gap de 22px e proporções `.86 / 2.3 / 1.65`. O bloco central contém Corridas e Evolução, com proporções internas `1.05 / 1.25` e uma divisória. A música contém duas listas de igual largura. A grade ocupa `calc(100dvh - 252px)`, com mínimo de 480px; cada área tem rolagem própria e título sticky com fundo a 93% para manter a legibilidade.
 
-De 651 a 1279px, a grade passa a duas colunas e a página volta à rolagem normal. Até 650px, as quatro áreas se empilham; um menu sticky leva aos títulos e considera seu deslocamento ao navegar por âncoras. O par de listas musicais permanece lado a lado.
+Entre 1051 e 1279px, Tarefas e o bloco de treinos ficam lado a lado; música ocupa a linha seguinte. Até 1050px, os três blocos se empilham. Até 650px, Corridas e Evolução também se empilham dentro do bloco central. Um menu sticky leva aos títulos no celular. O par de listas musicais permanece lado a lado.
 
-Margem de página de 28px no desktop e 14px no celular. Padding das áreas de 20–24px; em telas acima de 1800px, 28px. Sem rolagem horizontal nos tamanhos verificados de 390 e 1440px.
+Sem largura máxima: a página ocupa a largura disponível, inclusive em ultrawide. Padding lateral `clamp(20px, 1.7vw, 64px)` no desktop e 14px no celular. Padding das áreas de 20–24px; acima de 1800px, 28px. A data e o mês usam inicial maiúscula; o relógio em teal atualiza a cada segundo no fuso America/Sao_Paulo e continua visível no celular.
 
 **The Coverage Rule.** Lacunas de coleta ficam sem linhas ou barras; meses incompletos usam opacidade reduzida e texto explícito. Não interpretar falta de coleta como zero.
 
 ## Elevation & Depth
 
-O painel é plano, separado por bordas de 1px e mudança de tom. Sombra apenas no diálogo (`0 18px 40px #0006`) e no foco do formulário. O backdrop do diálogo escurece a interface e preserva o contexto.
+Os três blocos usam `rgb(18 20 30 / 84%)`, bordas de 1px e blur de 6px quando suportado. A transparência está no preenchimento, nunca no texto. O diálogo mantém fundo sólido e sombra `0 18px 40px #0006` para preservar a leitura do mapa e das medidas.
+
+A cena `p7Ff6pfTrb5Gs59C7nLC` usa SDK Unicorn Studio fixado em v1.4.29, resolução limitada e 24fps. Um filtro SVG de luminância mapeia sombras para `#151a29` e luzes para `#08ffb1`, sem alterar o projeto remoto. O fundo é fixed e não captura cliques. Com redução de movimento ou falha de carregamento, permanece um fundo estático na paleta.
 
 ## Shapes
 
-Controles com cantos moderados, painel a 10px e diálogo a 12px. Listas usam divisórias horizontais. Checkboxes quadrados de 17px com cantos de 4px. Ícones são SVG inline com traço de 1.8px; checkmark é desenhado por bordas CSS.
+Controles com cantos moderados; os três blocos e o diálogo usam 12px. Listas usam divisórias horizontais. Checkboxes quadrados de 17px com cantos de 4px. Ícones são SVG inline com traço de 1.8px; checkmark é desenhado por bordas CSS.
 
 ## Components
 
@@ -153,5 +157,5 @@ Rankings de 7 e 30 dias, com ordinal, faixa, artista e reproduções. As faixas 
 
 ### Don't:
 - **Don't** representar meses sem coleta como zero ou inventar trajetos.
-- **Don't** adicionar animação contínua, áudio ou efeitos que disputem a leitura.
+- **Don't** adicionar áudio ou efeitos que disputem a leitura; a cena de fundo é a animação ambiente explicitamente solicitada.
 - **Don't** expor credenciais ou arquivos pessoais no diretório público.

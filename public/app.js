@@ -58,7 +58,7 @@ function renderCharts(){
  if(!values.length){$('#charts').innerHTML='<p class="empty">A evolução aparecerá após a primeira coleta Garmin.</p>';return;}
  $('#chart-coverage').textContent=`${month(values[0].month)} a ${month(values.at(-1).month)} · pontos atenuados indicam mês incompleto. Lacunas indicam ausência de coleta.`;
  $('#charts').innerHTML=[['volume','Distância','km','totalKm',v=>num(v)+' km'],['pace','Pace médio','min/km','pace',v=>pace(v)+'/km'],['hr','FC média','bpm','hr',v=>num(v,0)+' bpm']].map(([id,title,unit,key,fmt])=>{
-  const width=300,height=156,left=34,right=8,top=10,bottom=28,plot=width-left-right,ph=height-top-bottom;
+  const width=Math.max(300,Math.round($('#charts').clientWidth)),height=156,left=34,right=8,top=10,bottom=28,plot=width-left-right,ph=height-top-bottom;
   const actual=values.filter(v=>!v.missing&&Number.isFinite(v[key]));
   if(!actual.length)return `<section class="chart-block"><div class="chart-title"><h3>${title}</h3><span>${unit}</span></div><p class="empty">Sem dados coletados.</p></section>`;
   const max=Math.max(...actual.map(v=>v[key]),id==='volume'?1:0),min=id==='volume'?0:Math.min(...actual.map(v=>v[key]));
@@ -135,9 +135,18 @@ async function refresh(){
  if(results[1].status==='fulfilled'&&!saving){tasks=results[1].value.tasks;renderTasks();}else if(results[1].status==='rejected'){$('#task-status').textContent=results[1].reason.message;if(!tasks.length)$('#tasks').innerHTML='<li class="empty">Tarefas indisponíveis. Tente atualizar.</li>';}
  $('#refresh').disabled=false;
 }
-$('#today').textContent=new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',timeZone:'America/Sao_Paulo'});
+const calendarFormat=new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'2-digit',month:'long',timeZone:'America/Sao_Paulo'});
+const clockFormat=new Intl.DateTimeFormat('pt-BR',{hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23',timeZone:'America/Sao_Paulo'});
+function updateClock(){
+ const now=new Date();
+ $('#today').textContent=calendarFormat.formatToParts(now).map(p=>p.type==='weekday'||p.type==='month'?p.value[0].toLocaleUpperCase('pt-BR')+p.value.slice(1):p.value).join('');
+ $('#clock').textContent=clockFormat.format(now);$('#clock').dateTime=now.toISOString();
+}
+updateClock();setInterval(updateClock,1000);
 $('#task-form').addEventListener('submit',e=>{e.preventDefault();const text=$('#task-input').value.trim();if(text)saveTask({action:'create',id:crypto.randomUUID(),text});});
 $('#refresh').addEventListener('click',refresh);$('#months').addEventListener('change',()=>data&&renderCharts());$('#more-runs').addEventListener('click',()=>{shown+=10;renderRuns();});
+let chartResizeTimer;
+window.addEventListener('resize',()=>{clearTimeout(chartResizeTimer);chartResizeTimer=setTimeout(()=>{if(data)renderCharts();},150);});
 $('#close-dialog').addEventListener('click',collapseRun);$('#run-dialog').addEventListener('cancel',e=>{e.preventDefault();collapseRun();});$('#run-dialog').addEventListener('close',()=>{selectedRun=null;});
 setInterval(async()=>{if(!saving&&!document.hidden){try{const result=await api('tasks');if(!saving){tasks=result.tasks;renderTasks();}}catch{$('#task-status').textContent='Sem conexão. Suas últimas tarefas continuam visíveis.';}}},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!saving)refresh();});

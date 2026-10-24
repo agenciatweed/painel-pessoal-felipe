@@ -22,7 +22,8 @@ Substitui o painel Flask em agenciatweed.com.br/tweedtraining. Código em agenci
 - Corridas Garmin, sem esteira ou atividades virtuais; detalhes e trajeto real sobre Google Maps.
 - Evolução mensal: distância total, média de distância por treino, pace em min:seg/km e FC média em bpm.
 - Músicas mais ouvidas em janelas móveis de 7 e 30 dias, lado a lado dentro da seção musical.
-- Quatro áreas principais no desktop e leitura responsiva no celular.
+- Quatro áreas principais no desktop, agrupadas em três blocos (Tarefas, Corridas + Evolução e Em rotação), largura fluida para ultrawide e leitura responsiva no celular.
+- Fundo Unicorn Studio fornecido pelo usuário, com tonalização Tweed, blocos levemente transparentes e relógio atual em São Paulo.
 - Usuário confirmou consulta e edição públicas, sem login. O armazenamento privado evita arquivos pessoais no repositório público; os dados exibidos continuam acessíveis pelo painel público.
 - Usuário escolheu código público e dados em armazenamento privado. Tarefas não serão commitadas no Git público.
 - O computador precisa executar a sincronização para atualizar arquivos coletados. A interface informa atualização e cobertura; falta de coleta não equivale a zero.
